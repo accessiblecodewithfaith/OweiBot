@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login - OweiBot</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+  <div class="min-h-screen flex items-center justify-center px-4 py-6">
+    <div class="bg-white rounded-2xl shadow-lg w-full max-w-md overflow-hidden">
+      
+      <!-- Login Form -->
+      <div class="p-8">
+        <div class="mb-6 text-center">
+          <h1 class="text-2xl font-bold text-emerald-600">OweiBot</h1>
+          <p class="text-sm text-gray-500">Vendor Login</p>
+        </div>
+
+        <form id="login-form" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700">WhatsApp Number</label>
+            <input type="tel" id="phone" name="phone" placeholder="e.g., 2348123456789" required 
+              class="mt-1 w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Password</label>
+            <input type="password" id="password" name="password" required 
+              class="mt-1 w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+          </div>
+
+          <div class="text-right text-sm">
+            <a href="forgotpassword.html" class="text-emerald-600 hover:underline">Forgot Password?</a>
+          </div>
+
+          <button type="submit" class="w-full bg-emerald-600 text-white py-2 rounded-lg hover:bg-emerald-700 transition">Log In</button>
+        </form>
+
+        <p class="text-sm text-center text-gray-500 mt-4">
+          Don’t have an account? 
+          <a href="/register.html" class="text-emerald-600 font-medium">Sign up</a>
+        </p>
+
+        <!-- Legal Links -->
+        <div class="mt-4 text-xs text-center text-gray-400 space-x-2">
+          <button onclick="toggleModal('termsModal')" class="hover:underline text-emerald-600">Terms</button>
+          <button onclick="toggleModal('privacyModal')" class="hover:underline text-emerald-600">Privacy</button>
+          <button onclick="toggleModal('gdprModal')" class="hover:underline text-emerald-600">GDPR</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modals -->
+  <div id="termsModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full">
+      <h2 class="text-lg font-bold mb-2">Terms and Conditions</h2>
+      <p class="text-sm text-gray-600 max-h-64 overflow-y-auto">
+        By using OweiBot, you agree to our terms. We do not tolerate fraudulent activity. You are responsible for your listings and must fulfill orders once accepted...
+      </p>
+      <div class="text-right mt-4">
+        <button onclick="toggleModal('termsModal')" class="text-emerald-600 hover:underline">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="privacyModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full">
+      <h2 class="text-lg font-bold mb-2">Privacy Policy</h2>
+      <p class="text-sm text-gray-600 max-h-64 overflow-y-auto">
+        We collect and store only necessary information to process orders and improve services. Your phone number is used for WhatsApp communication only and never shared without consent...
+      </p>
+      <div class="text-right mt-4">
+        <button onclick="toggleModal('privacyModal')" class="text-emerald-600 hover:underline">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="gdprModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full">
+      <h2 class="text-lg font-bold mb-2">GDPR Compliance</h2>
+      <p class="text-sm text-gray-600 max-h-64 overflow-y-auto">
+        Under GDPR, you have the right to access, update, or delete your personal data. Contact us at support@oweibot.com for requests. By continuing, you consent to our data practices...
+      </p>
+      <div class="text-right mt-4">
+        <button onclick="toggleModal('gdprModal')" class="text-emerald-600 hover:underline">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toggle Modal Script -->
+  <script>
+    function toggleModal(id) {
+      const modal = document.getElementById(id);
+      modal.classList.toggle('hidden');
+    }
+  </script>
+
+  <!-- ✅ Login Script -->
+  <script>
+  // Toggle modal function
+  function toggleModal(id) {
+    const modal = document.getElementById(id);
+    modal.classList.toggle('hidden');
+  }
+
+  // Login handler
+  document.getElementById('login-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const phone = document.getElementById('phone').value.trim();
+    const password = document.getElementById('password').value;
+
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone, password })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        localStorage.setItem('vendorId', data.vendor.id);
+        window.location.href = data.redirect;
+      } else {
+        alert(data.error || '❌ Login failed.');
+      }
+    } catch (err) {
+      console.error('❌ Login error:', err);
+      alert('❌ Server error. Please try again.');
+    }
+  });
+</script>
+
+</body>
+</html>

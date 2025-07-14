@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pricing Plans - OweiBot</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-black text-white">
+
+  <!-- Pricing Section -->
+  <section class="bg-gradient-to-b from-green-950 to-black text-white py-20 px-6 md:px-20">
+    <div class="max-w-6xl mx-auto text-center">
+
+      <!-- Title -->
+      <h2 class="text-4xl md:text-5xl font-extrabold mb-16">
+        Simple, Transparent Pricing
+      </h2>
+      <p class="text-green-200 mb-8 text-lg">
+        All plans are billed monthly. You’ll be charged the equivalent of <strong>£10</strong> in your local currency at checkout.
+      </p>
+
+      <!-- Pricing Grid -->
+      <div class="grid md:grid-cols-3 gap-10">
+
+        <!-- Starter Plan -->
+        <div class="bg-white/5 backdrop-blur-md p-8 rounded-2xl shadow-xl">
+          <h3 class="text-2xl font-semibold text-green-200 mb-2">Starter</h3>
+          <p class="text-3xl font-bold text-white mb-4">Free</p>
+          <ul class="text-green-100 text-left space-y-3 mb-6">
+            <li>✅ Up to 30 orders/month</li>
+            <li>✅ Basic WhatsApp bot access</li>
+            <li>✅ One smart order link (no customization)</li>
+            <li>🔒 No sales summary or follow-ups</li>
+            <li>🔒 No menu uploads or link tracking</li>
+          </ul>
+          <a href="https://wa.me/234XXXXXXXXXX"
+             class="inline-block mt-4 px-6 py-3 border border-green-300 rounded-full text-green-100 hover:bg-green-700 transition-all">
+            Try Free
+          </a>
+        </div>
+
+        <!-- Pro Plan -->
+        <div class="relative bg-white/10 backdrop-blur-md p-8 rounded-2xl shadow-xl border-2 border-green-400">
+
+          <!-- Most Popular Tag -->
+          <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-green-600 text-white text-xs font-semibold px-4 py-1 rounded-full shadow-lg uppercase tracking-wide">
+            Most Popular
+          </div>
+
+          <h3 class="text-2xl font-semibold text-green-100 mb-2 mt-6">Pro</h3>
+          <p class="text-3xl font-bold text-white mb-4">£10<span class="text-green-300 text-lg"> / month</span></p>
+          <p class="text-green-300 text-sm mb-4">You'll be charged the equivalent in your local currency</p>
+          <ul class="text-green-100 text-left space-y-3 mb-6">
+            <li>✅ 100+ orders/month</li>
+            <li>✅ Full WhatsApp bot access</li>
+            <li>✅ Custom smart order link with your name & menu</li>
+            <li>✅ Auto-receipts & order confirmations</li>
+            <li>✅ Daily sales summary + weekly top customer alert</li>
+            <li>✅ Smart follow-ups & upsell prompts</li>
+            <li>✅ Priority vendor support</li>
+          </ul>
+
+          <!-- Dynamic Link -->
+          <a id="pro-upgrade-link"
+             class="inline-block mt-4 px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-full transition-all cursor-pointer">
+            Upgrade to Pro
+          </a>
+        </div>
+
+        <!-- Premium Plan -->
+        <div class="bg-white/5 backdrop-blur-md p-8 rounded-2xl shadow-xl">
+          <h3 class="text-2xl font-semibold text-green-200 mb-2">Premium</h3>
+          <p class="text-3xl font-bold text-white mb-4">£30<span class="text-green-300 text-lg"> / month</span></p>
+          <p class="text-green-300 text-sm mb-4">Coming Soon – billed in your local currency</p>
+          <ul class="text-green-100 text-left space-y-3 mb-6">
+            <li>✅ Unlimited orders & automation</li>
+            <li>✅ All Pro features included</li>
+            <li>✅ Reseller dashboard & onboarding</li>
+            <li>🛠️ <strong>Have the bot on your own WhatsApp number</strong> (Coming Soon)</li>
+          </ul>
+          <button disabled class="inline-block mt-4 px-6 py-3 border border-green-300 text-green-400 rounded-full opacity-60 cursor-not-allowed">
+            Coming Soon
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- JavaScript to Inject vendorId -->
+  <script>
+    const vendorId = localStorage.getItem('vendorId');
+    const upgradeBtn = document.getElementById('pro-upgrade-link');
+
+    if (!vendorId) {
+      upgradeBtn.href = "#";
+      upgradeBtn.onclick = () => {
+        alert("Please log in or register before upgrading to Pro.");
+      };
+    } else {
+      upgradeBtn.href = `/pay.html?vendorId=${vendorId}&plan=pro`;
+    }
+  </script>
+
+</body>
+</html>

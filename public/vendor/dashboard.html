@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vendor Dashboard - OweiBot</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    .transition-transform {
+      transition: transform 0.3s ease-in-out;
+    }
+  </style>
+</head>
+<body class="font-sans bg-gradient-to-b from-green-800 to-green-900 text-white">
+
+  <!-- Sidebar -->
+  <aside class="w-64 bg-white text-green-900 fixed inset-y-0 left-0 z-50 px-6 py-8 hidden md:block">
+    <div class="text-2xl font-bold mb-6">OweiBot</div>
+    <nav class="space-y-2 text-sm font-semibold">
+      <a href="#" class="block py-2 hover:text-green-600">Dashboard</a>
+      <a href="orders.html" class="block py-2 hover:text-green-600">Orders</a>
+      <a href="menu.html" class="block py-2 hover:text-green-600">Menu</a>
+      <a href="accountsettings.html" class="block py-2 hover:text-green-600">Account settings</a>
+      <button onclick="logout()" class="text-sm text-red-600 hover:underline mt-4"> Log Out</button>
+    </nav>
+  </aside>
+
+  <!-- Mobile Sidebar -->
+  <div class="md:hidden fixed top-4 left-4 z-50">
+    <button onclick="toggleSidebar()" class="bg-white text-green-900 px-3 py-1 rounded shadow">☰</button>
+  </div>
+
+  <div id="sidebarMobile" class="fixed inset-0 z-40 bg-black/50 hidden">
+    <div class="bg-white w-64 h-full p-6 text-green-900">
+      <div class="text-xl font-bold mb-4">OweiBot</div>
+      <button onclick="toggleSidebar()" class="text-sm text-red-500 mb-4">✕ Close</button>
+      <nav class="space-y-2">
+        <a href="#" class="block py-2 hover:text-green-600">Dashboard</a>
+        <a href="orders.html" class="block py-2 hover:text-green-600">Orders</a>
+        <a href="menu.html" class="block py-2 hover:text-green-600">Menu</a>
+        <a href="accountsettings.html" class="block py-2 hover:text-green-600">Account settings</a>
+        <a href="#" onclick="logout()" class="text-black hover:underline">Logout</a>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <main class="md:ml-64 px-4 py-6 space-y-6">
+    <h1 class="text-2xl font-bold">
+      Welcome, <span id="vendorName" class="text-emerald-300"></span> 👋
+    </h1>
+
+    <!-- Metrics -->
+    <div class="grid gap-4 md:grid-cols-3">
+      <div class="bg-white/20 backdrop-blur rounded-xl p-4 shadow text-center">
+        <h2 class="text-lg font-semibold">🆕 New Orders</h2>
+        <p class="text-3xl font-bold mt-2" id="newOrders">0</p>
+      </div>
+      <div class="bg-white/20 backdrop-blur rounded-xl p-4 shadow text-center">
+        <h2 class="text-lg font-semibold">📦 Total Orders</h2>
+        <p class="text-3xl font-bold mt-2" id="totalOrders">0</p>
+      </div>
+      <div class="bg-white/20 backdrop-blur rounded-xl p-4 shadow text-center">
+        <h2 class="text-lg font-semibold">⏳ Pending</h2>
+        <p class="text-3xl font-bold mt-2" id="pendingOrders">0</p>
+      </div>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="bg-white/20 backdrop-blur rounded-xl p-6 shadow overflow-auto">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-semibold">Recent Orders</h3>
+        <button class="bg-white text-green-800 px-4 py-2 rounded hover:bg-green-100">Upload Menu</button>
+      </div>
+      <table class="w-full text-sm text-white">
+        <thead class="text-left border-b border-white/30">
+          <tr>
+            <th class="py-2">Customer</th>
+            <th class="py-2">Items</th>
+            <th class="py-2">Address</th>
+            <th class="py-2">Status</th>
+          </tr>
+        </thead>
+        <tbody id="ordersTable" class="divide-y divide-white/20"></tbody>
+      </table>
+    </div>
+
+    <!-- Approval -->
+    <div id="approvalNotice" class="hidden bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-md">
+      Your account is pending approval. You’ll be notified via WhatsApp when approved.
+    </div>
+
+    <!-- Plan -->
+    <div class="bg-white/20 backdrop-blur rounded-xl p-6 shadow">
+      <h3 class="text-lg font-semibold mb-4">🔐 Your Plan</h3>
+      <div class="flex items-center space-x-4">
+        <select id="planSelect" class="bg-white text-green-900 px-4 py-2 rounded">
+          <option value="free">Free</option>
+          <option value="pro">Pro</option>
+          <option value="premium">Premium</option>
+        </select>
+        <button onclick="updatePlan()" class="bg-emerald-600 text-white px-4 py-2 rounded hover:bg-emerald-700">
+          Update Plan
+        </button>
+      </div>
+      <p id="planMessage" class="text-sm mt-2"></p>
+    </div>
+  </main>
+
+  <!-- Scripts -->
+   <script>
+  function toggleSidebar() {
+    document.getElementById('sidebarMobile').classList.toggle('hidden');
+  }
+
+  function logout() {
+    localStorage.removeItem('vendorId');
+    localStorage.removeItem('vendorEmail');
+    fetch('/api/auth/logout', { method: 'POST' })
+      .finally(() => window.location.href = '/login.html');
+  }
+
+  // ✅ Unified Data Fetch
+  fetch('/api/vendor/dashboard-data', {
+    credentials: 'include' // makes sure cookies/session are sent
+  })
+    .then(res => res.json())
+    .then(data => {
+      // Vendor name
+      document.getElementById('vendorName').textContent = data.vendorName || 'Vendor';
+
+      // Plan selection
+      if (data.plan) {
+        document.getElementById('planSelect').value = data.plan;
+      }
+
+      // Approval status
+      if (data.status !== 'approved') {
+        document.getElementById('approvalNotice').classList.remove('hidden');
+      }
+
+      // Orders stats
+      document.getElementById('newOrders').textContent = data.orders.length;
+      document.getElementById('totalOrders').textContent = data.totalOrders;
+      document.getElementById('pendingOrders').textContent = data.pendingOrders;
+
+      // Orders table
+      const tbody = document.getElementById('ordersTable');
+      tbody.innerHTML = '';
+      data.orders.forEach(order => {
+        const row = `
+          <tr>
+            <td class="py-2">${order.customerName}</td>
+            <td class="py-2">${order.items.map(i => i.name).join(', ')}</td>
+            <td class="py-2">${order.address}</td>
+            <td class="py-2">${order.status === 'pending' ? '⏳ Pending' : '✅ Completed'}</td>
+          </tr>`;
+        tbody.insertAdjacentHTML('beforeend', row);
+      });
+    })
+    .catch(err => {
+      console.error('Dashboard load error:', err);
+    });
+
+  async function updatePlan() {
+    const vendorId = localStorage.getItem('vendorId');
+    const plan = document.getElementById('planSelect').value;
+
+    try {
+      const res = await fetch(`/api/vendor/plan/${vendorId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan })
+      });
+
+      const result = await res.json();
+      document.getElementById('planMessage').textContent = result.message || '✅ Plan updated!';
+    } catch (err) {
+      console.error('Plan update error:', err);
+      document.getElementById('planMessage').textContent = '❌ Failed to update plan.';
+    }
+  }
+
+
+
+async function loadVendorDashboard() {
+    const res = await fetch('/api/vendor/me'); // adjust if needed
+    const vendor = await res.json();
+
+    if (vendor.status === 'approved') {
+      const link = vendor.botLink || `https://wa.me/${vendor.phone.replace('+', '')}?text=Hi%20${encodeURIComponent(vendor.businessName)}%2C%20your%20OweiBot%20account%20is%20ready!`;
+      document.getElementById('vendor-link-section').innerHTML = `
+        <p class="text-green-800 font-semibold">
+          🔗 Your OweiBot Link: <a href="${link}" target="_blank" class="text-blue-600 underline">${link}</a>
+        </p>`;
+    }
+  }
+
+  loadVendorDashboard();
+
+
+
+</script>
+
+</body>
+</html>

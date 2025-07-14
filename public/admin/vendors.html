@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin – Vendors</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+  <div class="min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-green-900 text-white p-4">
+      <h1 class="text-xl font-bold">Admin Dashboard – Vendors</h1>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-6">
+      <div class="max-w-6xl mx-auto bg-white p-6 rounded-xl shadow-md">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-2xl font-semibold text-gray-800">All Vendors</h2>
+          <input id="searchInput" type="text" placeholder="Search by business name..." class="px-4 py-2 border rounded-lg w-64" />
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm text-left border">
+            <thead class="bg-green-800 text-white">
+              <tr>
+                <th class="px-4 py-2">Business Name</th>
+                <th class="px-4 py-2">Phone</th>
+                <th class="px-4 py-2">Status</th>
+                <th class="px-4 py-2">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="vendorTable" class="bg-white divide-y divide-gray-200">
+              <!-- JS will populate -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    async function fetchVendors() {
+      const res = await fetch('/admin/vendors');
+      const data = await res.json();
+      displayVendors(data);
+    }
+
+    function displayVendors(vendors) {
+      const tbody = document.getElementById('vendorTable');
+      const search = document.getElementById('searchInput').value.toLowerCase();
+
+      tbody.innerHTML = '';
+      vendors.filter(v => v.businessName.toLowerCase().includes(search)).forEach(v => {
+        const row = document.createElement('tr');
+
+        row.innerHTML = `
+          <td class="px-4 py-2">${v.businessName}</td>
+          <td class="px-4 py-2">${v.phone}</td>
+          <td class="px-4 py-2">
+            <span class="px-2 py-1 text-xs rounded-full ${
+              v.status === 'approved' ? 'bg-green-200 text-green-700' :
+              v.status === 'pending' ? 'bg-yellow-200 text-yellow-700' :
+              'bg-red-200 text-red-700'
+            }">${v.status}</span>
+          </td>
+         <td class="px-4 py-2">
+  ${v.status === 'pending' ? `
+    <button onclick="approveVendor('${v._id}')" class="bg-green-500 text-white px-2 py-1 rounded">Approve</button>
+    <button onclick="rejectVendor('${v._id}')" class="bg-red-500 text-white px-2 py-1 rounded">Reject</button>
+  ` : v.status}
+</td>
+
+        `
+        tbody.appendChild(row);
+      });
+    }
+
+    function approveVendor(id) {
+      fetch(`/admin/vendors/${id}/approve`, { method: 'PATCH' }).then(() => fetchVendors());
+    }
+
+    function rejectVendor(id) {
+      fetch(`/admin/vendors/${id}/reject`, { method: 'PATCH' }).then(() => fetchVendors());
+    }
+
+    document.getElementById('searchInput').addEventListener('input', fetchVendors);
+
+    fetchVendors();
+  </script>
+</body>
+</html>

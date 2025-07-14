@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vendor Account Settings</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-b from-green-800 to-green-900 min-h-screen flex items-center justify-center p-6">
+
+  <div class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-2xl space-y-8 relative">
+
+    <!-- Header -->
+    <div class="text-center">
+      <h1 class="text-2xl font-bold text-green-800">Account Settings</h1>
+      <p class="text-gray-500 text-sm">Customize your profile, payment, and automation preferences</p>
+    </div>
+
+    <!-- Profile Image Upload -->
+    <form id="profile-image-form" enctype="multipart/form-data" class="space-y-4">
+      <label class="block text-gray-700 font-medium">Profile Image</label>
+      <input type="file" name="image" accept="image/*" required class="w-full border border-gray-300 rounded-lg p-2" />
+      <button type="submit" class="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800">Upload Image</button>
+    </form>
+
+    <!-- Preferences -->
+    <form id="preferences-form" class="space-y-4">
+      <!-- Business Name -->
+      <div>
+        <label class="block text-gray-700 font-medium">Business Name</label>
+        <input name="businessName" type="text" required class="w-full border border-gray-300 rounded-lg p-2"/>
+      </div>
+
+      <!-- Language -->
+      <div>
+        <label class="block text-gray-700 font-medium">Preferred Language</label>
+        <select name="language" class="w-full border border-gray-300 rounded-lg p-2">
+          <option value="en">English</option>
+          <option value="fr">French</option>
+          <option value="sw">Swahili</option>
+        </select>
+      </div>
+
+      <!-- Currency -->
+      <div>
+        <label class="block text-gray-700 font-medium">Currency</label>
+        <select name="currency" class="w-full border border-gray-300 rounded-lg p-2">
+          <option value="NGN">₦ NGN (Naira)</option>
+          <option value="USD">$ USD</option>
+          <option value="KES">KSh KES</option>
+        </select>
+      </div>
+
+      <!-- Bank Account Info -->
+      <div>
+        <label class="block text-gray-700 font-medium">Account Number</label>
+        <input name="accountNumber" type="text" required class="w-full border border-gray-300 rounded-lg p-2"/>
+      </div>
+      <div>
+        <label class="block text-gray-700 font-medium">Bank Name</label>
+        <input name="bankName" type="text" required class="w-full border border-gray-300 rounded-lg p-2"/>
+      </div>
+
+      <!-- Custom Thank You Message -->
+      <div>
+        <label class="block text-gray-700 font-medium">Thank You Message</label>
+        <textarea name="thankYouMessage" rows="2" placeholder="e.g., Thank you for your order! We appreciate you." class="w-full border border-gray-300 rounded-lg p-2"></textarea>
+      </div>
+
+      <button type="submit" class="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800">Save Settings</button>
+    </form>
+
+    <!-- Toggles -->
+    <div class="space-y-4 mt-6">
+      <div class="flex items-center justify-between">
+        <label for="whatsapp-toggle" class="text-gray-700 font-medium">Receive WhatsApp Orders</label>
+        <input type="checkbox" id="whatsapp-toggle" class="w-5 h-5 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+      </div>
+
+      <div class="flex items-center justify-between">
+        <label for="ai-toggle" class="text-gray-700 font-medium">Enable AI Auto-Reply</label>
+        <input type="checkbox" id="ai-toggle" class="w-5 h-5 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Scripts -->
+  <script>
+    const vendorId = localStorage.getItem('vendorId');
+
+    // Upload profile image
+    document.getElementById('profile-image-form').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      const res = await fetch(`/api/vendor/profile-image/${vendorId}`, {
+        method: 'PATCH',
+        body: formData
+      });
+      const result = await res.json();
+      alert(result.message || 'Profile image updated!');
+    });
+
+    // Update preferences
+    document.getElementById('preferences-form').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const form = new FormData(this);
+      const data = {
+        businessName: form.get('businessName'),
+        language: form.get('language'),
+        currency: form.get('currency'),
+        accountNumber: form.get('accountNumber'),
+        bankName: form.get('bankName'),
+        thankYouMessage: form.get('thankYouMessage')
+      };
+
+      const res = await fetch(`/api/vendor/preferences/${vendorId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const result = await res.json();
+      alert(result.message || 'Preferences saved!');
+    });
+
+    // WhatsApp toggle
+    document.getElementById('whatsapp-toggle').addEventListener('change', async function () {
+      const res = await fetch(`/api/vendor/whatsapp-toggle/${vendorId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ enabled: this.checked })
+      });
+      const result = await res.json();
+      alert(result.message || 'WhatsApp status updated.');
+    });
+
+    // AI toggle
+    document.getElementById('ai-toggle').addEventListener('change', async function () {
+      const res = await fetch(`/api/vendor/ai-toggle/${vendorId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ enabled: this.checked })
+      });
+      const result = await res.json();
+      alert(result.message || 'AI reply setting updated.');
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign Up - OweiBot</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+  <div class="min-h-screen flex items-center justify-center px-4 py-6">
+    <div class="bg-white rounded-2xl shadow-lg overflow-hidden w-full max-w-xl">
+      
+      <!-- Signup Form -->
+      <div class="w-full p-8">
+        <div class="mb-6 text-center">
+          <h1 class="text-2xl font-bold text-emerald-600">OweiBot</h1>
+          <p class="text-sm text-gray-500">Vendor Registration</p>
+        </div>
+
+        <form id="registerForm" class="space-y-4">
+          <input type="text" name="name" placeholder="Business Name" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500" />
+          <input type="tel" name="phone" placeholder="WhatsApp Number" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500" />
+          <input type="text" name="country" placeholder="Country" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500" />
+          <input type="text" name="currency" placeholder="Currency (e.g. NGN)" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500" />
+          <input type="text" name="timezone" placeholder="Timezone (e.g. Africa/Lagos)" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500" />
+          <input type="password" name="password" placeholder="Password" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500" />
+
+          <!-- Legal checkbox -->
+          <div class="text-sm text-gray-600">
+            <label class="flex items-start space-x-2">
+              <input type="checkbox" required class="mt-1">
+              <span>
+                I agree to the 
+                <a href="#" onclick="openModal('termsModal')" class="text-emerald-600 underline">Terms</a>, 
+                <a href="#" onclick="openModal('privacyModal')" class="text-emerald-600 underline">Privacy Policy</a>, and 
+                <a href="#" onclick="openModal('gdprModal')" class="text-emerald-600 underline">GDPR Policy</a>
+              </span>
+            </label>
+          </div>
+
+          <button type="submit" class="w-full bg-emerald-600 text-white py-2 rounded-lg hover:bg-emerald-700 transition">Sign Up</button>
+        </form>
+
+        <p class="text-sm text-center text-gray-500 mt-4">
+          Already have an account? 
+          <a href="/login.html" class="text-emerald-600 font-medium">Login</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODALS -->
+  <div id="termsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white w-11/12 max-w-lg p-6 rounded-lg shadow-lg">
+      <h2 class="text-xl font-semibold mb-2">Terms & Conditions</h2>
+      <p class="text-sm text-gray-700 h-64 overflow-y-auto">
+        You agree not to misuse the platform. OweiBot provides tools to help vendors take WhatsApp orders efficiently. You agree to comply with local laws and avoid abuse...
+      </p>
+      <button onclick="closeModal('termsModal')" class="mt-4 bg-emerald-600 text-white px-4 py-2 rounded hover:bg-emerald-700">Close</button>
+    </div>
+  </div>
+
+  <div id="privacyModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white w-11/12 max-w-lg p-6 rounded-lg shadow-lg">
+      <h2 class="text-xl font-semibold mb-2">Privacy Policy</h2>
+      <p class="text-sm text-gray-700 h-64 overflow-y-auto">
+        We value your privacy. OweiBot only stores information necessary for account setup, order processing, and compliance with legal frameworks. Your data is not sold...
+      </p>
+      <button onclick="closeModal('privacyModal')" class="mt-4 bg-emerald-600 text-white px-4 py-2 rounded hover:bg-emerald-700">Close</button>
+    </div>
+  </div>
+
+  <div id="gdprModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white w-11/12 max-w-lg p-6 rounded-lg shadow-lg">
+      <h2 class="text-xl font-semibold mb-2">GDPR Compliance</h2>
+      <p class="text-sm text-gray-700 h-64 overflow-y-auto">
+        In compliance with GDPR, you have full control over your data. You may request access, corrections, or deletion of your personal data at any time by contacting support...
+      </p>
+      <button onclick="closeModal('gdprModal')" class="mt-4 bg-emerald-600 text-white px-4 py-2 rounded hover:bg-emerald-700">Close</button>
+    </div>
+  </div>
+
+  <!-- Script -->
+  <script>
+    function openModal(id) {
+      document.getElementById(id).classList.remove('hidden');
+      document.getElementById(id).classList.add('flex');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+      document.getElementById(id).classList.remove('flex');
+    }
+
+    document.getElementById('registerForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const form = e.target;
+      const data = {
+        name: form.name.value,
+        phone: form.phone.value,
+        country: form.country.value,
+        currency: form.currency.value,
+        timezone: form.timezone.value,
+        password: form.password.value
+      };
+
+      try {
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        const result = await res.json();
+
+        if (res.ok && result._id) {
+          localStorage.setItem('vendorId', result._id);
+          localStorage.setItem('vendorEmail', data.phone);
+
+          window.location.href = "/pay.html";
+        } else {
+          alert(result.message || 'Registration failed.');
+        }
+      } catch (err) {
+        console.error('❌ Registration error:', err);
+        alert('Something went wrong. Try again.');
+      }
+    });
+  </script>
+</body>
+</html>

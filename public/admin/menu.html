@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Menu Items - Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="p-6 bg-gray-100">
+  <h1 class="text-2xl font-bold mb-4 text-green-800">🍔 All Menu Items</h1>
+  <table class="w-full bg-white shadow rounded-lg overflow-hidden">
+    <thead class="bg-green-100">
+      <tr>
+        <th class="p-3">Image</th>
+        <th class="p-3">Name</th>
+        <th class="p-3">Price</th>
+        <th class="p-3">Vendor</th>
+        <th class="p-3">Action</th>
+      </tr>
+    </thead>
+    <tbody id="menuList"></tbody>
+  </table>
+
+  <script>
+    fetch('/admin/menu')
+      .then(res => res.json())
+      .then(data => {
+        const list = document.getElementById('menuList');
+        list.innerHTML = '';
+        data.forEach(item => {
+          list.innerHTML += `
+            <tr class="border-b">
+              <td class="p-3"><img src="${item.image}" alt="" class="w-12 h-12 rounded" /></td>
+              <td class="p-3">${item.name}</td>
+              <td class="p-3">₦${item.price}</td>
+              <td class="p-3">${item.vendor?.businessName || 'N/A'}</td>
+              <td class="p-3">
+                <button onclick="deleteItem('${item._id}')" class="bg-red-500 text-white px-3 py-1 rounded">Delete</button>
+              </td>
+            </tr>`;
+        });
+      });
+
+    function deleteItem(id) {
+      if (!confirm('Delete this menu item?')) return;
+      fetch(`/admin/menu/${id}`, { method: 'DELETE' }).then(() => location.reload());
+    }
+  </script>
+</body>
+</html>
