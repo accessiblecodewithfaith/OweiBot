@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // Crons
-import './cron/dailySummary.js';
+import './cron/dailysummary.js';
 import './cron/autoFollowUp.js';
 
 
