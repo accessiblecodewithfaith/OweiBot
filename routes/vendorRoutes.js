@@ -4,7 +4,10 @@ import path from 'path';
 import fs from 'fs';
 import Vendor from '../models/VendorModel.js';
 import { isVendor } from '../middleware/auth.js';
+<<<<<<< HEAD
 import checkPlan from '../middleware/checkPlan.js'; // ✅ Import the middleware
+=======
+>>>>>>> 2179414cd6a37cf973d561ce484eff25dc08781b
 
 const router = express.Router();
 
@@ -20,6 +23,10 @@ const storage = multer.diskStorage({
     cb(null, uniqueName);
   }
 });
+<<<<<<< HEAD
+=======
+
+>>>>>>> 2179414cd6a37cf973d561ce484eff25dc08781b
 const upload = multer({ storage });
 
 /**
@@ -87,7 +94,11 @@ router.post(
 /**
  * ✅ PATCH: Update Preferences
  */
+<<<<<<< HEAD
 router.patch('/preferences/:vendorId', isVendor, checkPlan, async (req, res) => {
+=======
+router.patch('/preferences/:vendorId', isVendor, async (req, res) => {
+>>>>>>> 2179414cd6a37cf973d561ce484eff25dc08781b
   try {
     const { businessName, currency, language, accountNumber, bankName, thankYouMessage } = req.body;
     const vendor = await Vendor.findById(req.params.vendorId);
@@ -111,7 +122,11 @@ router.patch('/preferences/:vendorId', isVendor, checkPlan, async (req, res) => 
 /**
  * ✅ PATCH: Update Profile Image
  */
+<<<<<<< HEAD
 router.patch('/profile-image/:vendorId', isVendor, checkPlan, upload.single('image'), async (req, res) => {
+=======
+router.patch('/profile-image/:vendorId', isVendor, upload.single('image'), async (req, res) => {
+>>>>>>> 2179414cd6a37cf973d561ce484eff25dc08781b
   try {
     const vendor = await Vendor.findById(req.params.vendorId);
     if (!vendor) return res.status(404).json({ message: 'Vendor not found' });
@@ -128,7 +143,11 @@ router.patch('/profile-image/:vendorId', isVendor, checkPlan, upload.single('ima
 /**
  * ✅ PATCH: Toggle WhatsApp Orders
  */
+<<<<<<< HEAD
 router.patch('/whatsapp-toggle/:vendorId', isVendor, checkPlan, async (req, res) => {
+=======
+router.patch('/whatsapp-toggle/:vendorId', isVendor, async (req, res) => {
+>>>>>>> 2179414cd6a37cf973d561ce484eff25dc08781b
   try {
     const vendor = await Vendor.findById(req.params.vendorId);
     if (!vendor) return res.status(404).json({ message: 'Vendor not found' });
@@ -145,7 +164,11 @@ router.patch('/whatsapp-toggle/:vendorId', isVendor, checkPlan, async (req, res)
 /**
  * ✅ PATCH: Toggle AI Auto-Reply
  */
+<<<<<<< HEAD
 router.patch('/ai-toggle/:vendorId', isVendor, checkPlan, async (req, res) => {
+=======
+router.patch('/ai-toggle/:vendorId', isVendor, async (req, res) => {
+>>>>>>> 2179414cd6a37cf973d561ce484eff25dc08781b
   try {
     const vendor = await Vendor.findById(req.params.vendorId);
     if (!vendor) return res.status(404).json({ message: 'Vendor not found' });

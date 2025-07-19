@@ -2,7 +2,11 @@ import Vendor from '../models/VendorModel.js';
 import fs from 'fs';
 import path from 'path';
 
+<<<<<<< HEAD
 // 🟢 Update vendor preferences
+=======
+// 🟢 Update vendor preferences (business name, language, currency, account info, etc.)
+>>>>>>> 2179414cd6a37cf973d561ce484eff25dc08781b
 export const updateVendorPreferences = async (req, res) => {
   try {
     const vendorId = req.params.id;
@@ -33,11 +37,19 @@ export const updateProfileImage = async (req, res) => {
 
     if (req.file) {
       const imagePath = `/uploads/profile/${req.file.filename}`;
+<<<<<<< HEAD
       vendor.logo = imagePath;
       await vendor.save();
     }
 
     res.json({ message: '✅ Profile image updated', image: vendor.logo });
+=======
+      vendor.image = imagePath;
+      await vendor.save();
+    }
+
+    res.json({ message: '✅ Profile image updated', image: vendor.image });
+>>>>>>> 2179414cd6a37cf973d561ce484eff25dc08781b
   } catch (err) {
     console.error('❌ Image upload error:', err);
     res.status(500).json({ message: 'Server error while uploading image' });
@@ -75,6 +87,7 @@ export const toggleAI = async (req, res) => {
     res.status(500).json({ message: 'Server error while updating AI setting' });
   }
 };
+<<<<<<< HEAD
 
 // 🟢 Upgrade plan to pro/premium (no payment logic for now)
 export const upgradePlan = async (req, res) => {
@@ -140,3 +153,5 @@ export const getVendorDashboard = async (req, res) => {
     res.status(500).json({ message: 'Server error loading dashboard' });
   }
 };
+=======
+>>>>>>> 2179414cd6a37cf973d561ce484eff25dc08781b

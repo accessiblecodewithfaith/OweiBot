@@ -12,6 +12,7 @@ exports.registerVendor = async (req, res) => {
     const exists = await Vendor.findOne({ phone });
     if (exists) return res.status(409).send('⚠️ Phone already registered.');
 
+<<<<<<< HEAD
     const newVendor = new Vendor({
       name,
       phone,
@@ -21,6 +22,11 @@ exports.registerVendor = async (req, res) => {
     });
 
     await newVendor.save();
+=======
+    const newVendor = new Vendor({ name, phone, password });
+    await newVendor.save();
+
+>>>>>>> 2179414cd6a37cf973d561ce484eff25dc08781b
     res.redirect('/');
   } catch (err) {
     console.error('❌ Error in registerVendor:', err);
@@ -36,6 +42,7 @@ exports.loginVendor = async (req, res) => {
     const vendor = await Vendor.findOne({ phone, password });
     if (!vendor) return res.status(401).send('❌ Invalid login credentials.');
 
+<<<<<<< HEAD
     // Optional: calculate days left in trial
     let trialMessage = '';
     if (vendor.plan === 'pro' && vendor.trialStartDate) {
@@ -49,6 +56,9 @@ exports.loginVendor = async (req, res) => {
     }
 
     res.send(`<h2>Welcome ${vendor.name}!</h2><p>Login successful.</p>${trialMessage}`);
+=======
+    res.send(`<h2>Welcome ${vendor.name}!</h2><p>Login successful.</p>`);
+>>>>>>> 2179414cd6a37cf973d561ce484eff25dc08781b
   } catch (err) {
     console.error('❌ Error in loginVendor:', err);
     res.status(500).send('❌ Internal server error');

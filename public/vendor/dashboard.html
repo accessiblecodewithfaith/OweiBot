@@ -101,10 +101,13 @@
     <div id="approvalNotice" class="hidden bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-md">
       Your account is pending approval. You’ll be notified via WhatsApp when approved.
     </div>
+<<<<<<< HEAD
 <!-- Trial Expired -->
 <div id="trialExpiredNotice" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md">
   Your free trial has ended. Upgrade your plan to continue using the dashboard.
 </div>
+=======
+>>>>>>> 2179414cd6a37cf973d561ce484eff25dc08781b
 
     <!-- Plan -->
     <div class="bg-white/20 backdrop-blur rounded-xl p-6 shadow">
@@ -138,6 +141,7 @@
 
   // ✅ Unified Data Fetch
   fetch('/api/vendor/dashboard-data', {
+<<<<<<< HEAD
   credentials: 'include'
 })
   .then(res => res.json())
@@ -194,6 +198,48 @@
     console.error('Dashboard load error:', err);
   });
   
+=======
+    credentials: 'include' // makes sure cookies/session are sent
+  })
+    .then(res => res.json())
+    .then(data => {
+      // Vendor name
+      document.getElementById('vendorName').textContent = data.vendorName || 'Vendor';
+
+      // Plan selection
+      if (data.plan) {
+        document.getElementById('planSelect').value = data.plan;
+      }
+
+      // Approval status
+      if (data.status !== 'approved') {
+        document.getElementById('approvalNotice').classList.remove('hidden');
+      }
+
+      // Orders stats
+      document.getElementById('newOrders').textContent = data.orders.length;
+      document.getElementById('totalOrders').textContent = data.totalOrders;
+      document.getElementById('pendingOrders').textContent = data.pendingOrders;
+
+      // Orders table
+      const tbody = document.getElementById('ordersTable');
+      tbody.innerHTML = '';
+      data.orders.forEach(order => {
+        const row = `
+          <tr>
+            <td class="py-2">${order.customerName}</td>
+            <td class="py-2">${order.items.map(i => i.name).join(', ')}</td>
+            <td class="py-2">${order.address}</td>
+            <td class="py-2">${order.status === 'pending' ? '⏳ Pending' : '✅ Completed'}</td>
+          </tr>`;
+        tbody.insertAdjacentHTML('beforeend', row);
+      });
+    })
+    .catch(err => {
+      console.error('Dashboard load error:', err);
+    });
+
+>>>>>>> 2179414cd6a37cf973d561ce484eff25dc08781b
   async function updatePlan() {
     const vendorId = localStorage.getItem('vendorId');
     const plan = document.getElementById('planSelect').value;
