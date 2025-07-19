@@ -3,7 +3,7 @@
 import express from 'express';
 import twilio from 'twilio';
 import Order from '../models/OrderModel.js';
-import Menu from '../models/MenuModel.js';
+import Menu from '../models/menuModel.js';
 import Vendor from '../models/VendorModel.js';
 import formatCurrency from '../utils/currencyHelper.js';
 import { getAIReply } from '../utils/openaiHelper.js';
