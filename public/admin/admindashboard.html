@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard - OweiBot</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+  <div class="min-h-screen flex flex-col md:flex-row">
+    <!-- Sidebar -->
+    <aside class="md:w-64 w-full bg-green-900 text-white p-4 space-y-6">
+      <div class="text-2xl font-bold text-center">OweiBot Admin</div>
+      <nav class="space-y-3 text-center md:text-left">
+        <a href="#" class="block py-2 px-4 rounded hover:bg-green-800">Dashboard</a>
+        <a href="vendors.html" class="block py-2 px-4 rounded hover:bg-green-800">Vendors</a>
+        <a href="#admin-management" class="block py-2 px-4 rounded hover:bg-green-800">Admins</a>
+        <a href="/admin/logout" class="block py-2 px-4 rounded hover:bg-red-700 mt-10">Logout</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-4 md:p-8 overflow-x-auto">
+      <h1 class="text-2xl font-bold text-gray-800 mb-6">Dashboard Overview</h1>
+
+      <!-- Summary Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div class="bg-white shadow rounded-lg p-4 text-center">
+          <h2 class="text-sm text-gray-500">Total Vendors</h2>
+          <p id="vendorCount" class="text-2xl font-semibold">--</p>
+        </div>
+        <div class="bg-white shadow rounded-lg p-4 text-center">
+          <h2 class="text-sm text-gray-500">WhatsApp Enabled</h2>
+          <p class="text-2xl font-semibold">--</p>
+        </div>
+      </div>
+
+      <!-- Approved Vendors -->
+      <section id="vendors" class="mb-10">
+        <h2 class="text-xl font-semibold text-gray-700 mb-4">Vendors</h2>
+        <div class="overflow-x-auto">
+          <table class="min-w-full bg-white shadow-md rounded text-sm">
+            <thead class="bg-green-900 text-white">
+              <tr>
+                <th class="py-2 px-4 text-left">Business</th>
+                <th class="py-2 px-4 text-left">Phone</th>
+                <th class="py-2 px-4 text-left">Country</th>
+                <th class="py-2 px-4 text-left">Status</th>
+                <th class="py-2 px-4 text-left">Action</th>
+              </tr>
+            </thead>
+            <tbody id="vendor-table" class="text-gray-700">
+              <!-- Injected here -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Admin Management -->
+      <section id="admin-management" class="bg-white p-6 rounded-lg shadow-lg">
+        <h2 class="text-2xl font-bold mb-4 text-green-800">👤 Admin Management</h2>
+        <form id="addAdminForm" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <input type="text" name="name" placeholder="Name" required class="border p-2 rounded"/>
+          <input type="email" name="email" placeholder="Email" required class="border p-2 rounded"/>
+          <input type="password" name="password" placeholder="Password" required class="border p-2 rounded"/>
+          <select name="role" required class="border p-2 rounded">
+            <option value="admin">Admin</option>
+            <option value="superadmin">Superadmin</option>
+          </select>
+          <button type="submit" class="col-span-1 md:col-span-4 bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800">
+            ➕ Add Admin
+          </button>
+        </form>
+
+        <table class="w-full text-left table-auto border-collapse text-sm">
+          <thead>
+            <tr class="bg-green-100">
+              <th class="p-2 border">Name</th>
+              <th class="p-2 border">Email</th>
+              <th class="p-2 border">Role</th>
+              <th class="p-2 border">Action</th>
+            </tr>
+          </thead>
+          <tbody id="adminList">
+            <!-- Fetched admins here -->
+          </tbody>
+        </table>
+      </section>
+    </main>
+  </div>
+
+  <!-- JS Logic -->
+  <script>
+    async function fetchVendors() {
+      try {
+        const res = await fetch('/api/admin/vendors');
+        const vendors = await res.json();
+
+        document.getElementById('vendorCount').textContent = vendors.length;
+
+        const table = document.getElementById('vendor-table');
+        table.innerHTML = vendors.map(vendor => `
+          <tr>
+            <td class="py-2 px-4">${vendor.businessName}</td>
+            <td class="py-2 px-4">${vendor.phone}</td>
+            <td class="py-2 px-4">${vendor.country || 'N/A'}</td>
+            <td class="py-2 px-4">${vendor.status === 'approved' ? '✅ Approved' : '⏳ Pending'}</td>
+            <td class="py-2 px-4">
+              ${vendor.status === 'pending' ? `
+                <button onclick="approveVendor('${vendor._id}')" class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-800">
+                  Approve
+                </button>` : `<a href="${vendor.botLink || '#'}" target="_blank" class="text-blue-600 underline">Open Bot</a>`
+              }
+            </td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        console.error('Error loading vendors:', err);
+      }
+    }
+
+    async function approveVendor(id) {
+      if (!confirm('Are you sure you want to approve this vendor?')) return;
+
+      try {
+        const res = await fetch(`/api/admin/vendors/${id}/approve`, {
+          method: 'PATCH'
+        });
+
+        const raw = await res.text();
+        const contentType = res.headers.get('content-type');
+
+        if (res.ok) {
+          if (contentType && contentType.includes('application/json')) {
+            const data = JSON.parse(raw);
+            alert(`✅ Vendor approved!\nOweiBot Link: ${data.botLink || 'Unavailable'}`);
+            fetchVendors();
+          } else {
+            alert('✅ Vendor approved!');
+            fetchVendors();
+          }
+        } else {
+          console.error('❌ Server Error Response:', raw);
+          alert('❌ Error: ' + raw);
+        }
+      } catch (err) {
+        console.error('❌ Unexpected error:', err);
+        alert('❌ An unexpected error occurred.');
+      }
+    }
+
+    async function fetchAdmins() {
+      const res = await fetch('/api/admin/admins');
+      const data = await res.json();
+      const adminList = document.getElementById('adminList');
+      adminList.innerHTML = data.map(admin => `
+        <tr>
+          <td class="border p-2">${admin.name}</td>
+          <td class="border p-2">${admin.email}</td>
+          <td class="border p-2">${admin.role}</td>
+          <td class="border p-2">
+            <button onclick="deleteAdmin('${admin._id}')" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-700">Delete</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    document.getElementById('addAdminForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = new FormData(e.target);
+      const payload = Object.fromEntries(form.entries());
+
+      const res = await fetch('/api/admin/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (res.ok) {
+        alert('✅ Admin added!');
+        fetchAdmins();
+        e.target.reset();
+      } else {
+        const msg = await res.text();
+        alert('❌ ' + msg);
+      }
+    });
+
+    async function deleteAdmin(id) {
+      if (!confirm('Are you sure?')) return;
+
+      const res = await fetch(`/api/admin/admins/${id}`, { method: 'DELETE' });
+
+      if (res.ok) {
+        alert('✅ Admin deleted');
+        fetchAdmins();
+      } else {
+        alert('❌ Failed to delete admin');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchVendors();
+      fetchAdmins();
+    });
+  </script>
+</body>
+</html>

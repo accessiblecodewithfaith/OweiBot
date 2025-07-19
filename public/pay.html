@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Upgrade to Pro - OweiBot</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-black text-white">
+
+  <!-- Pay Section -->
+  <section class="min-h-screen py-20 px-6 md:px-20">
+    <div class="max-w-3xl mx-auto text-center">
+      <!-- Title -->
+      <h1 class="text-4xl md:text-5xl font-extrabold mb-6">Upgrade to Pro</h1>
+      <p class="text-green-200 text-lg mb-8">
+        Enjoy 100+ orders/month, smart WhatsApp automation, auto-receipts, and daily summaries —
+        for just <strong>£10/month</strong> or your local currency equivalent.
+      </p>
+
+      <!-- Local Pricing Info -->
+      <div id="pricing-box" class="bg-white/10 p-6 rounded-2xl shadow-xl text-left mb-10">
+        <p class="text-lg">Detected Country: <span id="country" class="font-semibold text-green-300">Detecting...</span></p>
+        <p class="text-lg">Local Price: <span id="local-price" class="font-semibold text-green-300">Loading...</span></p>
+      </div>
+
+      <!-- Payment Buttons -->
+      <div class="grid md:grid-cols-3 gap-6">
+        <button id="paystack-btn" class="hidden bg-green-600 hover:bg-green-700 py-3 px-6 rounded-xl text-white font-semibold transition-all">
+          Pay with Paystack
+        </button>
+        <button id="flutterwave-btn" class="hidden bg-yellow-500 hover:bg-yellow-600 py-3 px-6 rounded-xl text-black font-semibold transition-all">
+          Pay with Flutterwave
+        </button>
+        <button id="stripe-btn" class="hidden bg-blue-600 hover:bg-blue-700 py-3 px-6 rounded-xl text-white font-semibold transition-all">
+          Pay with Stripe
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Script -->
+  <script>
+    const countryEl = document.getElementById('country');
+    const priceEl = document.getElementById('local-price');
+    const paystackBtn = document.getElementById('paystack-btn');
+    const flutterwaveBtn = document.getElementById('flutterwave-btn');
+    const stripeBtn = document.getElementById('stripe-btn');
+
+    const vendorId = localStorage.getItem('vendorId');
+    const email = localStorage.getItem('vendorEmail');
+
+    if (!vendorId || !email) {
+      alert("⚠️ You must be logged in before making payment.");
+      window.location.href = "/login.html";
+    }
+
+    // Detect country and show right gateway
+    fetch("https://ipapi.co/json")
+      .then(res => res.json())
+      .then(data => {
+        const country = data.country;
+        countryEl.textContent = data.country_name;
+
+        if (country === "NG" || country === "ZA") {
+          priceEl.textContent = country === "NG" ? "₦19,000 NGN" : "R230 ZAR";
+          paystackBtn.classList.remove("hidden");
+          paystackBtn.onclick = () => handlePayment("paystack", email, vendorId);
+        } else if (country === "KE") {
+          priceEl.textContent = "KSh 1,800 KES";
+          flutterwaveBtn.classList.remove("hidden");
+          flutterwaveBtn.onclick = () => handlePayment("flutterwave", email, vendorId);
+        } else {
+          priceEl.textContent = "£10 GBP";
+          stripeBtn.classList.remove("hidden");
+          stripeBtn.onclick = () => handlePayment("stripe", email, vendorId);
+        }
+      });
+
+    // Send payment to backend
+    async function handlePayment(gateway, email, vendorId) {
+      const endpoint = `/api/pay/${gateway}`;
+
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, vendorId }),
+        });
+
+        const data = await res.json();
+        if (data.url) {
+          window.location.href = data.url;
+        } else {
+          alert('Payment failed. Try again.');
+        }
+      } catch (err) {
+        console.error('❌ Payment error:', err);
+        alert('Something went wrong.');
+      }
+    }
+
+
+
+const vendorId = localStorage.getItem('vendorId');
+  if (!vendorId) {
+    window.location.href = '/login.html';
+  }
+
+
+
+  const vendorId = localStorage.getItem('vendorId');
+const email = localStorage.getItem('vendorEmail');
+
+// Paystack
+paystackBtn.onclick = () => {
+  handlePayment("paystack", email, vendorId);
+};
+
+// Flutterwave
+flutterwaveBtn.onclick = () => {
+  handlePayment("flutterwave", email, vendorId);
+};
+
+// Stripe
+stripeBtn.onclick = () => {
+  handlePayment("stripe", email, vendorId);
+};
+
+
+
+
+
+
+  </script>
+
+</body>
+</html>

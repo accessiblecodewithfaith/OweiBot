@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Orders - OweiBot</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-b from-green-800 to-green-900 min-h-screen text-white">
+
+  <div class="max-w-6xl mx-auto px-4 py-10">
+    <h1 class="text-3xl font-bold mb-6 text-center">📦 My Orders</h1>
+
+    <div class="overflow-x-auto bg-white rounded-xl shadow-xl p-4 text-gray-800">
+      <table class="min-w-full table-auto border-collapse">
+        <thead>
+          <tr class="bg-emerald-600 text-white">
+            <th class="p-3 text-left">Customer</th>
+            <th class="p-3 text-left">Items</th>
+            <th class="p-3 text-left">Address</th>
+            <th class="p-3 text-left">Status</th>
+            <th class="p-3 text-left">Date</th>
+          </tr>
+        </thead>
+        <tbody id="ordersTableBody">
+          <tr><td colspan="5" class="text-center py-4 text-gray-400">Loading orders...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+<script>
+  async function loadOrders() {
+    try {
+      const res = await fetch('/api/vendor/orders'); // Session-based
+      const orders = await res.json();
+
+      const tbody = document.getElementById('ordersTableBody');
+      tbody.innerHTML = '';
+
+      if (orders.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-gray-500">No orders yet.</td></tr>';
+        return;
+      }
+
+      orders.forEach(order => {
+        const row = document.createElement('tr');
+        row.classList.add('border-b');
+
+        row.innerHTML = `
+          <td class="p-3">${order.customerName}</td>
+          <td class="p-3">${order.items.map(item => `${item.name} (₦${item.price})`).join(', ')}</td>
+          <td class="p-3">${order.address}</td>
+          <td class="p-3">
+            <span class="${order.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'} px-2 py-1 rounded-full text-xs">
+              ${order.status}
+            </span>
+          </td>
+          <td class="p-3">${new Date(order.createdAt).toLocaleString()}</td>
+        `;
+        tbody.appendChild(row);
+      });
+
+    } catch (err) {
+      console.error('❌ Failed to load orders:', err);
+      document.getElementById('ordersTableBody').innerHTML = `
+        <tr>
+          <td colspan="5" class="text-center text-red-600 py-4">Error loading orders.</td>
+        </tr>
+      `;
+    }
+  }
+
+  // ✅ Load on page ready
+  loadOrders();
+</script>
+
+</body>
+</html>

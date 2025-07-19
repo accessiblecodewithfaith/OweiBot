@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Complete Profile - OweiBot</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-b from-green-800 to-green-900 min-h-screen flex items-center justify-center px-4 py-10 text-gray-900">
+
+  <div class="w-full max-w-4xl bg-white/80 backdrop-blur-lg rounded-2xl shadow-2xl overflow-hidden">
+
+    <!-- Step Indicator -->
+    <div class="bg-white py-4 px-6 border-b">
+      <div class="flex justify-between items-center text-sm font-semibold text-gray-600">
+        <div class="flex items-center gap-2">
+          <div class="w-5 h-5 rounded-full bg-green-600 text-white flex items-center justify-center text-xs">1</div>
+          <span>Sign Up</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="w-5 h-5 rounded-full bg-green-600 text-white flex items-center justify-center text-xs">2</div>
+          <span class="text-green-800">Complete Profile</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="w-5 h-5 rounded-full bg-gray-300 text-white flex items-center justify-center text-xs">3</div>
+          <span>Dashboard</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <form action="/api/vendor/complete-profile" method="POST" enctype="multipart/form-data" class="p-8 space-y-6">
+      <h2 class="text-2xl font-bold text-center text-green-900">Complete Your Vendor Profile</h2>
+      <p class="text-center text-gray-600 text-sm mb-4">Build trust and unlock your dashboard faster.</p>
+
+      <!-- Logo Upload -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Upload Business Logo</label>
+        <input type="file" name="logo" accept="image/*" required
+               class="mt-1 w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none shadow-sm bg-white" />
+      </div>
+
+      <!-- Storefront Image -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Upload Storefront Image</label>
+        <input type="file" name="storeImage" accept="image/*" required
+               class="mt-1 w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none shadow-sm bg-white" />
+      </div>
+
+      <!-- Address -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Business Address</label>
+        <input type="text" name="location" placeholder="e.g. 23 Osagie St, Benin City" required
+               class="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none shadow-sm bg-white" />
+      </div>
+
+      <!-- Bank Info -->
+      <div class="grid md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Bank Name</label>
+          <input type="text" name="bankName" required
+                 class="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none shadow-sm bg-white" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Account Number</label>
+          <input type="text" name="accountNumber" required
+                 class="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none shadow-sm bg-white" />
+        </div>
+      </div>
+
+
+
+<select name="timezone" required
+        class="w-full px-4 py-2 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-green-500">
+  <option value="">-- Choose Timezone --</option>
+  <option value="Africa/Nairobi">Africa/Nairobi (EAT)</option>
+  <option value="Europe/London">Europe/London (GMT)</option>
+  <option value="Africa/Johannesburg">Africa/Johannesburg (SAST)</option>
+  <option value="Africa/Lagos">Africa/Lagos (WAT)</option>
+  <option value="America/New_York">America/New_York (EST)</option>
+  <option value="Asia/Dubai">Asia/Dubai (GST)</option>
+</select>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Opening Hours -->
+<div class="bg-white/60 p-4 rounded-lg shadow-inner">
+  <h3 class="text-lg font-semibold text-green-900 mb-2">Set Your Weekly Opening Hours</h3>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-gray-700">
+    
+    <!-- Monday -->
+    <div class="flex flex-col" data-day="Monday">
+      <label class="font-medium flex items-center gap-2">
+        Monday
+        <input type="checkbox" name="hours[Monday][closed]" onchange="toggleDayClosed(this)" />
+        <span class="text-xs text-red-600">Closed</span>
+      </label>
+      <div class="flex gap-2">
+        <input type="time" name="hours[Monday][open]" class="w-full px-3 py-1 border rounded focus:ring-2 focus:ring-green-500" required>
+        <span class="self-center">to</span>
+        <input type="time" name="hours[Monday][close]" class="w-full px-3 py-1 border rounded focus:ring-2 focus:ring-green-500" required>
+      </div>
+    </div>
+
+    <!-- Tuesday -->
+    <div class="flex flex-col" data-day="Tuesday">
+      <label class="font-medium flex items-center gap-2">
+        Tuesday
+        <input type="checkbox" name="hours[Tuesday][closed]" onchange="toggleDayClosed(this)" />
+        <span class="text-xs text-red-600">Closed</span>
+      </label>
+      <div class="flex gap-2">
+        <input type="time" name="hours[Tuesday][open]" class="w-full px-3 py-1 border rounded focus:ring-2 focus:ring-green-500" required>
+        <span class="self-center">to</span>
+        <input type="time" name="hours[Tuesday][close]" class="w-full px-3 py-1 border rounded focus:ring-2 focus:ring-green-500" required>
+      </div>
+    </div>
+
+    <!-- Wednesday -->
+    <div class="flex flex-col" data-day="Wednesday">
+      <label class="font-medium flex items-center gap-2">
+        Wednesday
+        <input type="checkbox" name="hours[Wednesday][closed]" onchange="toggleDayClosed(this)" />
+        <span class="text-xs text-red-600">Closed</span>
+      </label>
+      <div class="flex gap-2">
+        <input type="time" name="hours[Wednesday][open]" class="w-full px-3 py-1 border rounded focus:ring-2 focus:ring-green-500" required>
+        <span class="self-center">to</span>
+        <input type="time" name="hours[Wednesday][close]" class="w-full px-3 py-1 border rounded focus:ring-2 focus:ring-green-500" required>
+      </div>
+    </div>
+
+    <!-- Thursday -->
+    <div class="flex flex-col" data-day="Thursday">
+      <label class="font-medium flex items-center gap-2">
+        Thursday
+        <input type="checkbox" name="hours[Thursday][closed]" onchange="toggleDayClosed(this)" />
+        <span class="text-xs text-red-600">Closed</span>
+      </label>
+      <div class="flex gap-2">
+        <input type="time" name="hours[Thursday][open]" class="w-full px-3 py-1 border rounded focus:ring-2 focus:ring-green-500" required>
+        <span class="self-center">to</span>
+        <input type="time" name="hours[Thursday][close]" class="w-full px-3 py-1 border rounded focus:ring-2 focus:ring-green-500" required>
+      </div>
+    </div>
+
+    <!-- Friday -->
+    <div class="flex flex-col" data-day="Friday">
+      <label class="font-medium flex items-center gap-2">
+        Friday
+        <input type="checkbox" name="hours[Friday][closed]" onchange="toggleDayClosed(this)" />
+        <span class="text-xs text-red-600">Closed</span>
+      </label>
+      <div class="flex gap-2">
+        <input type="time" name="hours[Friday][open]" class="w-full px-3 py-1 border rounded focus:ring-2 focus:ring-green-500" required>
+        <span class="self-center">to</span>
+        <input type="time" name="hours[Friday][close]" class="w-full px-3 py-1 border rounded focus:ring-2 focus:ring-green-500" required>
+      </div>
+    </div>
+
+    <!-- Saturday -->
+    <div class="flex flex-col" data-day="Saturday">
+      <label class="font-medium flex items-center gap-2">
+        Saturday
+        <input type="checkbox" name="hours[Saturday][closed]" onchange="toggleDayClosed(this)" />
+        <span class="text-xs text-red-600">Closed</span>
+      </label>
+      <div class="flex gap-2">
+        <input type="time" name="hours[Saturday][open]" class="w-full px-3 py-1 border rounded focus:ring-2 focus:ring-green-500">
+        <span class="self-center">to</span>
+        <input type="time" name="hours[Saturday][close]" class="w-full px-3 py-1 border rounded focus:ring-2 focus:ring-green-500">
+      </div>
+    </div>
+
+    <!-- Sunday -->
+    <div class="flex flex-col" data-day="Sunday">
+      <label class="font-medium flex items-center gap-2">
+        Sunday
+        <input type="checkbox" name="hours[Sunday][closed]" onchange="toggleDayClosed(this)" />
+        <span class="text-xs text-red-600">Closed</span>
+      </label>
+      <div class="flex gap-2">
+        <input type="time" name="hours[Sunday][open]" class="w-full px-3 py-1 border rounded focus:ring-2 focus:ring-green-500">
+        <span class="self-center">to</span>
+        <input type="time" name="hours[Sunday][close]" class="w-full px-3 py-1 border rounded focus:ring-2 focus:ring-green-500">
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      <!-- CAC Certificate Upload -->
+      <div class="mb-6">
+  <label for="businessDoc" class="block text-sm font-medium text-black-100 flex items-center gap-2">
+    Business Registration Document 
+    <span class="relative group cursor-pointer">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-300" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M18 10A8 8 0 11 2 10a8 8 0 0116 0zm-8 4a1 1 0 100-2 1 1 0 000 2zm-.75-6a.75.75 0 000 1.5H10v1.25a.75.75 0 001.5 0V9a1.5 1.5 0 00-1.5-1.5h-.75z" clip-rule="evenodd" />
+      </svg>
+      <div class="absolute bottom-full mb-2 hidden group-hover:block bg-gray-800 text-xs text-white p-2 rounded shadow-md w-64 z-10">
+        Examples: CAC (Nigeria), CR12 (Kenya), BRN (Ghana), LLC Certificate (USA), ABN (Australia), etc.
+      </div>
+    </span>
+  </label>
+
+  <input 
+    type="file" 
+    name="businessDoc" 
+    id="businessDoc" 
+    required
+    class="mt-2 w-full border border-emerald-500 text-sm rounded-lg px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+  />
+</div>
+
+
+      <!-- Terms -->
+     <!-- ✅ Privacy and GDPR consent checkboxes -->
+<div class="flex items-start space-x-2">
+  <input type="checkbox" required class="mt-1 border rounded" />
+  <p class="text-sm text-gray-600">
+    I agree to the 
+    <button type="button" onclick="toggleModal('termsModal')" class="text-green-700 underline hover:text-green-800">Terms and Conditions</button>, 
+    <button type="button" onclick="toggleModal('privacyModal')" class="text-green-700 underline hover:text-green-800">Privacy Policy</button>, and 
+    acknowledge the 
+    <button type="button" onclick="toggleModal('gdprModal')" class="text-green-700 underline hover:text-green-800">GDPR Notice</button>.
+  </p>
+</div>
+      <!-- Submit -->
+      <button type="submit"
+              class="w-full bg-green-700 hover:bg-green-800 text-white py-2 rounded-lg font-semibold transition-all duration-300 shadow-sm">
+        Submit for Verification
+      </button>
+    </form>
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Terms Modal -->
+<div id="termsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+  <div class="bg-white rounded-xl w-11/12 max-w-2xl shadow-lg p-6 relative">
+    <button onclick="toggleModal('termsModal')" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700 text-xl">&times;</button>
+    <h2 class="text-xl font-semibold text-green-800 mb-4">Terms & Conditions</h2>
+    <div class="max-h-[60vh] overflow-y-auto text-sm text-gray-700 space-y-2">
+      <p>By registering on OweiBot, you agree to operate in good faith, fulfill orders promptly, and respect customer data privacy.</p>
+      <p>You agree not to post offensive or illegal content and to comply with relevant business regulations.</p>
+      <p>OweiBot is not liable for vendor disputes or delivery failures but may mediate when possible.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Privacy Policy Modal -->
+<div id="privacyModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+  <div class="bg-white rounded-xl w-11/12 max-w-2xl shadow-lg p-6 relative">
+    <button onclick="toggleModal('privacyModal')" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700 text-xl">&times;</button>
+    <h2 class="text-xl font-semibold text-green-800 mb-4">Privacy Policy</h2>
+    <div class="max-h-[60vh] overflow-y-auto text-sm text-gray-700 space-y-2">
+      <p>We collect your personal and business information solely for onboarding and platform functionality.</p>
+      <p>We never sell or share your data with third parties without your consent, except where required by law.</p>
+      <p>Data is encrypted and securely stored. You may request deletion at any time.</p>
+    </div>
+  </div>
+</div>
+
+<!-- GDPR Notice Modal -->
+<div id="gdprModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+  <div class="bg-white rounded-xl w-11/12 max-w-2xl shadow-lg p-6 relative">
+    <button onclick="toggleModal('gdprModal')" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700 text-xl">&times;</button>
+    <h2 class="text-xl font-semibold text-green-800 mb-4">GDPR Compliance</h2>
+    <div class="max-h-[60vh] overflow-y-auto text-sm text-gray-700 space-y-2">
+      <p>As per the General Data Protection Regulation (GDPR), you have the right to access, modify, or delete your personal data.</p>
+      <p>By using OweiBot, you consent to your data being processed for onboarding and order processing.</p>
+      <p>Contact us at privacy@oweibot.com for data access or concerns.</p>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+<!-- ...keep your existing head and form HTML exactly the same... -->
+
+<!-- Replace the ending <script> block with this -->
+<script>
+  function toggleModal(id) {
+    const modal = document.getElementById(id);
+    modal.classList.toggle('hidden');
+  }
+
+  // Handle profile submission
+  const form = document.querySelector('form');
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const formData = new FormData(form);
+
+    try {
+      const response = await fetch('/api/vendor/complete-profile', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (response.ok) {
+        alert('✅ Profile completed successfully!');
+        window.location.href = '/vendor/dashboard.html'; // update this path to match your actual dashboard
+      } else {
+        const errorText = await response.text();
+        alert('❌ Error: ' + errorText);
+      }
+    } catch (err) {
+      console.error('❌ Submission error:', err);
+      alert('❌ Something went wrong. Try again.');
+    }
+  });
+
+function toggleDayClosed(checkbox) {
+  const container = checkbox.closest('[data-day]');
+  const inputs = container.querySelectorAll('input[type="time"]');
+  inputs.forEach(input => {
+    input.disabled = checkbox.checked;
+    if (checkbox.checked) {
+      input.removeAttribute('required');
+    } else {
+      input.setAttribute('required', 'required');
+    }
+  });
+}
+
+
+
+
+</script>
+
+
+</body>
+</html>
