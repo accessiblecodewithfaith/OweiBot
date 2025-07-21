@@ -9,9 +9,6 @@ import './cron/dailysummary.js';
 import './cron/autoFollowUp.js';
 
 
-
-
-
 // Core
 import express from 'express';
 import mongoose from 'mongoose';
