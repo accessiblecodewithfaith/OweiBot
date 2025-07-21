@@ -1,4 +1,4 @@
-import Vendor from '../models/vendorModel.js';
+import Vendor from '../models/VendorModel.js';
 
 const checkPlan = async (req, res, next) => {
   try {
